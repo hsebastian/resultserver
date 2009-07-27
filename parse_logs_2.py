@@ -1,4 +1,4 @@
-# dependencies
+# dependencies 
 import os
 import re
 import fnmatch
@@ -145,7 +145,7 @@ def dbSend(data):
 # note: xpcshell tests run twice or appears twice in the log making the counts double
 def main():
   
-  i = 0 # for outFile
+  # i = 0 # for outFile
   findFiles("C:/Documents and Settings/Hans Sebastian/Desktop/samples/", "*_xpc.htm")
   
   for fileName in logFiles:
@@ -161,7 +161,7 @@ def main():
     
     if reStatus.search(contentAll) != None:
       tests.clear()
-      i += 1 # for outFile
+      # i += 1 # for outFile
       print inFile
       
       doc = dict({ 
@@ -185,12 +185,12 @@ def main():
         doc['tests'] = tests
         doc['timestamp'] = str(datetime.datetime.now())
         
-        outputFile = "C:/_Code/python/output" + str(i) + ".html"
-        outFile = open(outputFile, 'w')
-        outFile.write(json.dumps(doc, indent=2, sort_keys=True))
-        outFile.close()
+        # outputFile = "C:/_Code/python/output" + str(i) + ".html"
+        # outFile = open(outputFile, 'w')
+        # outFile.write(json.dumps(doc, indent=2, sort_keys=True))
+        # outFile.close()
         
-        # dbSend(doc)
+        dbSend(doc)
 
   print "done uploading results"
 
