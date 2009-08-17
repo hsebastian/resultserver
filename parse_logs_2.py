@@ -9,20 +9,20 @@ from couchdb import Server
 
 # data format
 # dataStructure = {
-  # "build": build, 
+  # "buildid": build, 
   # "product": product,
   # "os": opsys,
   # "testtype": testtype,
   # "timestamp": str(date),
-  # "tests": [test1, test2, test3]
+  # "tests": [test1, test2, test3, ...]
 # }
 
 # testStructure = {
   # testname: {
-    # "pass": pass,
-    # "fail": fail,
-    # "todo": todo,
-    # "notes": notes
+    # "pass": passcount,
+    # "fail": failcount,
+    # "todo": todocount,
+    # "note": [note1, note2, note3, ...]
 # }
 
 # pattern for matching either ...
@@ -113,25 +113,25 @@ def getTestDetail(text):
   if outcome == 'TEST-PASS':
     p = 1
     if name not in tests:
-      tests[name] = dict({'pass': p, 'fail': f, 'todo': t, 'note': ''})
+      tests[name] = dict({'pass': p, 'fail': f, 'todo': t, 'note': []})
     else:
       tests[name]['pass'] = tests[name]['pass'] + p
   elif outcome == 'TEST-KNOWN-FAIL':
     t = 1
     note = line[2]
     if name not in tests:
-      tests[name] = dict({'pass': p, 'fail': f, 'todo': t, 'note': note.strip()})
+      tests[name] = dict({'pass': p, 'fail': f, 'todo': t, 'note': [note.strip()]})
     else:
       tests[name]['todo'] = tests[name]['todo'] + t
-      tests[name]['note'] = tests[name]['note'] + ', ' + note
+      tests[name]['note'].append(note.strip())
   else:
     f = 1
     note = line[2]
     if name not in tests:
-      tests[name] = dict({'pass': p, 'fail': f, 'todo': t, 'note': note.strip()})
+      tests[name] = dict({'pass': p, 'fail': f, 'todo': t, 'note': [note.strip()]})
     else:
       tests[name]['fail'] = tests[name]['fail'] + f
-      tests[name]['note'] = tests[name]['note'] + ', ' + note
+      tests[name]['note'].append(note.strip())
 
 def dbSend(data):
 
