@@ -31,18 +31,9 @@ from couchquery import CouchDBException
 reStatus = re.compile(r'TEST-((FAIL)|(PASS)|(UNEXPECTED-FAIL)|(TIMEOUT)|(KNOWN-FAIL))')
 
 # global variables
-logFiles = []
 tests = dict()
 
-def findFiles(dir, pattern):
-  for file in os.listdir(dir):
-    if os.path.isdir(dir + file):
-      findFiles(dir + file + "/", pattern)
-    else:
-      if fnmatch.fnmatch(file, pattern):
-        logFiles.append(dir + file)
-
-def getBuild(text):
+def _getBuild(text):
   label = r'tinderbox: build: '
   regex = re.compile(label + r'.*')
   result = regex.search(text)
@@ -71,10 +62,10 @@ def getProduct(text):
     return 'no-info'
 
 def getOs(text):
-  return (re.split(' +', getBuild(text)))[0]
+  return (re.split(' +', _getBuild(text)))[0]
 
 def getTestType(text):
-  splitted = re.split(' +', getBuild(text))
+  splitted = re.split(' +', _getBuild(text))
   return splitted[len(splitted)-1]
 
 # cannot handle blank test file when exception occurred
