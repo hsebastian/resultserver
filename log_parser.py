@@ -2,13 +2,12 @@
 import os
 import re
 import fnmatch
-import simplejson as json
 import datetime
 from optparse import OptionParser
 
+import simplejson as json
 import couchquery
-# import couchdb
-# from couchdb import Server
+from couchquery import CouchDBException
 
 # data format
 # dataStructure = {
@@ -129,68 +128,86 @@ def getTestDetail(text):
       tests[name]['fail'] = tests[name]['fail'] + f
       tests[name]['note'].append(note.strip())
 
-def dbSend(data):
+def parseLog(filename):
+  
+  doc = {}
+  contentAll = ''
+  try:       
+    inFile = open(filename, 'r')
+  except IOError:
+    print "Can't open " + filename
+  else:
+    contentAll = inFile.read()
+    inFile.close()
+  
+  if reStatus.search(contentAll) != None:
+    tests.clear()
+    print inFile
+    
+    doc = { 
+      "build": getBuildId(contentAll), 
+      "product": getProduct(contentAll), 
+      "os": getOs(contentAll), 
+      "testtype": getTestType(contentAll)}
+    
+    contentByLine = []
+    try:       
+      inFile = open(filename, 'r')
+    except IOError:
+      print "Can't open " + filename
+    else:
+      contentByLine = inFile.readlines()
+      inFile.close()
+      
+      for line in contentByLine:
+        if reStatus.search(line) != None:
+          getTestDetail(line)      
+      doc['tests'] = tests
+      doc['timestamp'] = str(datetime.datetime.now())
+      print "Done parsing " + filename
+  return doc  
 
-  import httplib2
-  h = httplib2.Http(".cache")
-  h.add_credentials('happyhans', 'happyhanshappyhans')
-  h.request("http://happyhans.couch.io/tests1",
-    "POST", body=json.dumps(data),
-    headers={'content-type':'application/json'} )
+def save(data):
+  
+  db = couchquery.CouchDatabase("http://pythonesque.org:5984/fennec_test1", cache=Cache())
+  saved = False
+  try:
+    starttime = datetime.datetime.now()
+    db.create(data)
+    finishtime = datetime.datetime.now()
+    print finishtime - starttime
+    saved = True
+  except CouchDBException, e:
+    print "Error occurred while sending data :" + str(e)
+  finally:
+    return saved
 
-# note: xpcshell tests run twice or appears twice in the log making the counts double
 def main():
   
-  # i = 0 # for outFile
-  # findFiles("C:/Documents and Settings/Hans Sebastian/Desktop/samples/", "*_xpc.htm")
+  usage = "usage: %prog [options] arg"
+  parser = OptionParser(usage)
+  parser.add_option("-f", "--file", action="store", type="string", dest="filename", help="read data from FILENAME")
   
+  (options, args) = parser.parse_args()
   
-  
-  for fileName in logFiles:
-    
-    contentAll = ''
-    try:       
-      inFile = open(fileName, 'r')
-    except IOError:
-      print "Can't open " + fileName
+  if options.filename == None:
+    print "Please supply a filename (--help)"
+  else:
+    result = parseLog(options.filename)
+    if result == None:
+      print "Failed uploading results"
     else:
-      contentAll = inFile.read()
-      inFile.close()
-    
-    if reStatus.search(contentAll) != None:
-      tests.clear()
-      # i += 1 # for outFile
-      print inFile
-      
-      doc = dict({ 
-        "build": getBuildId(contentAll), 
-        "product": getProduct(contentAll), 
-        "os": getOs(contentAll), 
-        "testtype": getTestType(contentAll)})
-      
-      contentByLine = []
-      try:       
-        inFile = open(fileName, 'r')
-      except IOError:
-        print "Can't open " + fileName
+      if save(result) is False:
+        print "Failed uploading results"
       else:
-        contentByLine = inFile.readlines()
-        inFile.close()
-        
-        for line in contentByLine:
-          if reStatus.search(line) != None:
-            getTestDetail(line)      
-        doc['tests'] = tests
-        doc['timestamp'] = str(datetime.datetime.now())
-        
-        # outputFile = "C:/_Code/python/output" + str(i) + ".html"
-        # outFile = open(outputFile, 'w')
-        # outFile.write(json.dumps(doc, indent=2, sort_keys=True))
-        # outFile.close()
-        
-        dbSend(doc)
+        print "Done uploading results"
 
-  print "done uploading results"
-
+class Cache(dict):
+    def __init__(self, *args, **kwargs):
+        super(Cache, self).__init__(*args, **kwargs)
+        setattr(self, 'del', lambda *args, **kwargs: dict.__delitem__(*args, **kwargs) )
+    get = lambda *args, **kwargs: dict.__getitem__(*args, **kwargs)
+    set = lambda *args, **kwargs: dict.__setitem__(*args, **kwargs)
+    
 if __name__ == "__main__":
   result = main()

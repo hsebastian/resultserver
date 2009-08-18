@@ -1,0 +1,59 @@
+</a></PRE><H2>Build Error Log</H2><pre>tinderbox: tree: Mobile
+tinderbox: builddate: 1248877725
+tinderbox: status: success
+tinderbox: build: Maemo mozilla-central xpcshell
+tinderbox: errorparser: unittest
+tinderbox: binaryurl: 
+tinderbox: logcompression: bzip2
+tinderbox: logencoding: base64
+tinderbox: END
+BuildID=20090804070913
+======== BuildStep started ========
+hostname
+=== Output ===
+ closing stdin
+ using PTY: False
+[App]
+Vendor=Mozilla
+Name=Fennec
+Version=1.0b3pre
+SourceRepository=http://hg.mozilla.org/mobile-browser
+SourceStamp=74b006ed4d76
+Copyright=Copyright (c) 2008 Mozilla.org
+ID={a23983c0-fd0e-11dc-95ff-0800200c9a66}
+
+-------------------------
+INFO Passed: 1225
+INFO Failed: 177
+INFO Todo: 0
+program finished with exit code 0
+elapsedTime=1.322663
+Orig fail count: 171
+Orig known count: 0
+TinderboxPrint: xpcshell&lt;br/>1225/0/171 [182]
+=== Output ended ===
+======== BuildStep ended ========
+======== BuildStep started ========
+'reboot; sleep ...' failed slave lost
+=== Output ===
+reboot; sleep 600
+ in dir /media/mmc1/buildbot/maemo-trunk-xpcshell/build (timeout 1200 secs)
+ watching logfiles {}
+ argv: reboot; sleep 600
+ environment:
+  DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/session_bus_socket
+  DISPLAY=:0.0
+  GTK2_RC_FILES=/home/user/.osso/current-gtk-theme:/home/user/.osso/current-gtk-key-theme
+  HOME=/root
+  INIT_VERSION=sysvinit-2.85
+  MALLOC_CHECK_=0
+  MALLOC_MMAP_THRESHOLD_=32768
+  MALLOC_TRIM_THRESHOLD_=8192
+  OLDPWD=/
+remoteFailed: [Failure instance: Traceback (failure with no frames): &lt;class 'twisted.internet.error.ConnectionLost'>: Connection to the other side was lost in a non-clean fashion.
+]
+[Failure instance: Traceback (failure with no frames): &lt;class 'twisted.internet.error.ConnectionLost'>: Connection to the other side was lost in a non-clean fashion.
+]
+=== Output ended ===
+======== BuildStep ended ========
+</PRE><p><font size=+1>No More Errors</a></font><br><br><br>
