@@ -28,23 +28,23 @@ def main():
   
   document = 'TestingForDevelopment'
   products = ['Fennec', 'Firefox']
-  platforms = ['Maemo', 'Win', 'Linux', 'Mac']
-  testtypes = ['crashtests', 'mochitests', 'xpcshell', 'reftests']
+  platforms = ['Maemo-n810', 'WinMo'] #, 'Linux', 'Mac']
+  testtypes = ['crashtests', 'mochitests'] #, 'xpcshell', 'reftests']
   build = timestamp = ''
   
-  db = couchquery.CouchDatabase("http://pythonesque.org:5984/fennec_test", cache=Cache())
+  db = couchquery.Database("http://pythonesque.org:5984/fennec_test", cache=Cache())
   
   # create documents
-  doccount = random.randint(500, 600)
+  doccount = random.randint(50, 60)
   for i in range(0, doccount):
     
     # create metadata
     buildstructure = {}
     build = timestamp = str(datetime.datetime.now())
     buildstructure['build'] = build
-    buildstructure['product'] = 'product' + str(random.randint(1, 2))
-    buildstructure['os'] = 'platform' + str(random.randint(1, 2))
-    buildstructure['testtype'] = 'testtype' + str(random.randint(1, 2))
+    buildstructure['product'] = random.choice(products)
+    buildstructure['os'] = random.choice(platforms)
+    buildstructure['testtype'] = random.choice(testtypes)
     buildstructure['timestamp'] = build
     buildstructure['document'] = document
     
@@ -58,7 +58,7 @@ def main():
       notes = []
       for y in range(0, (failcount + todocount)):
         notes.append("This test should have returned TRUE but returned FALSE")
-      tests['test' + str(offset + x) + '.js'] = {
+      tests['test_' + str(offset + x) + '.js'] = {
         'pass': random.randint(0, 5),
         'fail': failcount,
         'todo': todocount,
